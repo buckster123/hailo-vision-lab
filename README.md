@@ -48,3 +48,31 @@ Web UI: `http://192.168.0.114:8765/`
 - Pose-based activity detection
 - Integration with SensorHead (motion + vision fusion)
 - Local LLM vision captions via ryzenai-serve VLM
+
+## Quick Start on the Pi
+
+```bash
+# Vision server (already running via systemd)
+systemctl --user status hailo-vision
+
+# Web UI
+open http://192.168.0.114:8765/
+
+# Activate detection
+curl -X POST http://192.168.0.114:8765/api/model/activate \
+  -d '{"model_path":"/usr/share/hailo-models/yolov8m_h10.hef","threshold":0.25}'
+```
+
+## Room Entry Watcher
+
+```bash
+python room_entry_watcher.py
+```
+
+It will:
+- Poll the vision server every second
+- Require 3 consecutive person detections
+- Write an episodic memory into CerebroCortex with tag `room-entry`
+- Cooldown of 2 minutes between triggers
+
+Future: turn the memory into an intention that can wake Hermes and give context.
